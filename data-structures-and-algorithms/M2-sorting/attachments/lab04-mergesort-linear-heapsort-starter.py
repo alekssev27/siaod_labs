@@ -11,11 +11,13 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import random
 import statistics
 import sys
 import time
 import traceback
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # 1. Сортировки (реализуются вручную; sorted() используется только как эталон)
@@ -23,47 +25,91 @@ import traceback
 
 
 def merge(left: list, right: list, key) -> list:
-    """Стабильное слияние двух отсортированных списков в новый список.
+    """Стабильное слияние двух отсортированных списков за O(n+m).
 
     Стабильность: при равенстве ключей элемент из left идёт раньше.
-    Ожидаемая сложность: TODO (обосновать в отчёте).
+    Ожидаемая сложность: O(n+m) времени и памяти.
     """
-    # TODO: два индекса, сравнение key(left[i]) <= key(right[j])
-    raise NotImplementedError
+    result, i, j = [], 0, 0
+    while i < len(left) and j < len(right):
+        if key(left[i]) <= key(right[j]):
+            result.append(left[i]); i += 1
+        else:
+            result.append(right[j]); j += 1
+    result.extend(left[i:]); result.extend(right[j:])
+    return result
 
 
 def merge_sort(a: list, key=lambda x: x) -> list:
-    """MergeSort: возвращает новый отсортированный список. Ожидаемая сложность: TODO."""
-    # TODO: рекурсивное деление пополам + merge()
-    raise NotImplementedError
+    """MergeSort: O(n log n) времени и O(n) дополнительной памяти."""
+    if len(a) <= 1:
+        return list(a)
+    middle = len(a) // 2
+    return merge(merge_sort(a[:middle], key), merge_sort(a[middle:], key), key)
 
 
 def counting_sort(a: list[int], key_max: int) -> list[int]:
     """Устойчивая сортировка подсчётом: ключи — целые из диапазона [0, key_max].
 
     Схема: массив счётчиков -> префиксные суммы -> расстановка с конца.
-    Ожидаемые время и память: TODO — выразить через n и k = key_max + 1;
+    Ожидаемые время и память: O(n+k), где k = key_max + 1;
     ограничение диапазона ключей обсудить в отчёте.
     """
-    # TODO: реализовать; проход расстановки — с конца массива (иначе теряется устойчивость)
-    raise NotImplementedError
+    if key_max < 0:
+        raise ValueError("key_max должен быть неотрицательным")
+    counts = [0] * (key_max + 1)
+    for value in a:
+        if not isinstance(value, int) or not 0 <= value <= key_max:
+            raise ValueError(f"ключ {value!r} вне диапазона [0, {key_max}]")
+        counts[value] += 1
+    for i in range(1, len(counts)):
+        counts[i] += counts[i - 1]
+    result = [0] * len(a)
+    for value in reversed(a):
+        counts[value] -= 1
+        result[counts[value]] = value
+    return result
+
+
+def _radix_digit_pass(result: list[int], exp: int) -> list[int]:
+    """Стабильно сортирует значения по цифре в разряде exp."""
+    counts = [0] * 10
+    for value in result:
+        counts[(value // exp) % 10] += 1
+    for i in range(1, 10):
+        counts[i] += counts[i - 1]
+    output = [0] * len(result)
+    for value in reversed(result):
+        digit = (value // exp) % 10
+        counts[digit] -= 1
+        output[counts[digit]] = value
+    return output
 
 
 def radix_sort_lsd(a: list[int]) -> list[int]:
     """RadixSort LSD по десятичным разрядам, неотрицательные целые.
 
-    Поверх устойчивой поразрядной counting-сортировки: от младшего разряда
-    к старшему. Ожидаемая сложность: TODO — выразить через n и число разрядов d.
+    Поверх устойчивого поразрядного прохода: O(d(n+10)) времени и O(n+10) памяти.
     """
-    # TODO: цикл по разрядам (exp = 1, 10, 100, ...) с устойчивой сортировкой
-    # по цифре (a[i] // exp) % 10; объяснить, почему без устойчивости
-    # внутреннего прохода алгоритм неверен
-    raise NotImplementedError
+    if any(not isinstance(value, int) or value < 0 for value in a):
+        raise ValueError("RadixSort LSD принимает только неотрицательные целые")
+    result, exp = list(a), 1
+    while max(result, default=0) // exp > 0:
+        result = _radix_digit_pass(result, exp)
+        exp *= 10
+    return result
 
 
 def sift_down(a: list[int], i: int, n: int) -> None:
     """Просейка вниз элемента i в куче a[0:n] (max-heap), на месте."""
-    # TODO: спуск с обменом с большим из потомков, пока нарушено свойство кучи
+    while True:
+        largest = i
+        left, right = 2 * i + 1, 2 * i + 2
+        if left < n and a[left] > a[largest]: largest = left
+        if right < n and a[right] > a[largest]: largest = right
+        if largest == i: return
+        a[i], a[largest] = a[largest], a[i]
+        i = largest
     raise NotImplementedError
 
 
@@ -73,14 +119,31 @@ def heap_sort(a: list[int]) -> None:
     Схема: построение max-кучи просейками вниз (снизу вверх, O(n)),
     затем обмен вершины с последним элементом и просейка. Сложность: TODO.
     """
-    # TODO: построение кучи + фаза извлечения максимумов
-    raise NotImplementedError
+    n = len(a)
+    for i in range(n // 2 - 1, -1, -1): sift_down(a, i, n)
+    for end in range(n - 1, 0, -1):
+        a[0], a[end] = a[end], a[0]
+        sift_down(a, 0, end)
 
 
 def quick_sort(a: list[int]) -> list[int]:
-    """QuickSort с рандомизацией опорного элемента — перенести из своей ЛР 3."""
-    # TODO: скопировать собственную реализацию из ЛР 3 (КИМ-03)
-    raise NotImplementedError
+    """QuickSort с воспроизводимым псевдослучайным опорным элементом."""
+    result, rng = list(a), random.Random(0)
+    stack = [(0, len(result) - 1)]
+    while stack:
+        lo, hi = stack.pop()
+        if lo >= hi: continue
+        pivot = result[rng.randrange(lo, hi + 1)]
+        i, j = lo, hi
+        while i <= j:
+            while result[i] < pivot: i += 1
+            while result[j] > pivot: j -= 1
+            if i <= j:
+                result[i], result[j] = result[j], result[i]
+                i += 1; j -= 1
+        if lo < j: stack.append((lo, j))
+        if i < hi: stack.append((i, hi))
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -150,11 +213,30 @@ def check_merge_stability() -> None:
            "merge_sort нестабилен: при равных ключах нарушен исходный порядок номеров")
 
 
+def check_heap_invariant() -> None:
+    """После построения max-кучи каждый родитель не меньше своих детей."""
+    rng = random.Random(47)
+    for n in range(100):
+        heap = [rng.randint(-100, 100) for _ in range(n)]
+        for i in range(n // 2 - 1, -1, -1): sift_down(heap, i, n)
+        for child in range(1, n):
+            expect(heap[(child - 1) // 2] >= heap[child], f"нарушен инвариант кучи в позиции {child}")
+
+
+def check_radix_pass_stability() -> None:
+    """Равные цифры в одном проходе сохраняют исходный порядок элементов."""
+    result = _radix_digit_pass([21, 11, 12, 22], 1)
+    expect(result == [21, 11, 12, 22],
+           f"устойчивый проход изменил порядок одинаковых цифр: {result}")
+
+
 def self_check() -> None:
     """Все проверки по разделам; при любой ошибке замеры не выполняются."""
     # fn=fn фиксирует функцию текущего шага цикла (иначе все лямбды увидят последнюю)
     checks = [(name, lambda fn=fn: check_sort(fn)) for name, fn in SORTS.items()]
     checks.append(("стабильность merge_sort", check_merge_stability))
+    checks.append(("инвариант max-кучи", check_heap_invariant))
+    checks.append(("устойчивость прохода radix", check_radix_pass_stability))
     failed = 0
     print("self_check:")
     for name, check in checks:
@@ -173,8 +255,6 @@ def self_check() -> None:
             failed += 1
         else:
             print(f"  {name}: OK")
-    # TODO: добавить собственные проверки (свойство кучи после построения,
-    #       устойчивость поразрядного прохода radix) и описать их в отчёте.
     if failed:
         raise SystemExit(f"self_check: не пройдено разделов — {failed}; "
                          f"замеры выполняются только после всех проверок.")
@@ -226,12 +306,13 @@ def run_benchmarks(seed: int) -> None:
     rng = random.Random(seed)
     algorithms = [
         ("merge_sort", merge_sort),
-        ("counting_sort", lambda a: counting_sort(a, key_max=max(a, default=0))),
+        ("counting_sort", None),
         ("radix_sort_lsd", radix_sort_lsd),
         ("heap_sort", heap_sort),
         ("quick_sort (ЛР 3)", quick_sort),
         ("sorted() (эталон)", sorted),
     ]
+    rows = []
     for n in SIZES:
         datasets = make_datasets(rng, n)
         print(f"\nn = {n}:")
@@ -243,11 +324,30 @@ def run_benchmarks(seed: int) -> None:
                     # применимости counting; зафиксировать в таблице свойств
                     print(f"    {algo_name:>18}: пропуск (диапазон ключей)")
                     continue
-                print(f"    {algo_name:>18}: t = {bench(fn, data):.6f} c")
-    # TODO: построить log-log графики (matplotlib) по каждому распределению;
-    # TODO: заполнить таблицу свойств: время (лучший/средний/худший),
-    #       память, стабильность, ограничения — для всех шести сортировок;
-    # TODO: объяснить расхождения замеров с асимптотикой в отчёте.
+                if algo_name == "counting_sort":
+                    # Граница известна из схемы генерации; не включаем её поиск в таймер.
+                    key_max = SMALL_KEY_MAX if dist_name == "random_small" else n
+                    fn = lambda a, bound=key_max: counting_sort(a, key_max=bound)
+                elapsed = bench(fn, data)
+                rows.append((dist_name, n, algo_name, elapsed))
+                print(f"    {algo_name:>18}: t = {elapsed:.6f} c")
+    out_dir = Path(__file__).resolve().parents[2] / "reports" / "lab04"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with (out_dir / "lab04_benchmark.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream); writer.writerow(("distribution", "n", "algorithm", "median_seconds")); writer.writerows(rows)
+    try:
+        import matplotlib.pyplot as plt
+        for dist in sorted({row[0] for row in rows}):
+            fig, ax = plt.subplots(figsize=(8, 5))
+            for algo in sorted({row[2] for row in rows}):
+                points = [(row[1], row[3]) for row in rows if row[0] == dist and row[2] == algo]
+                if points:
+                    ax.plot([p[0] for p in points], [p[1] for p in points], marker="o", label=algo)
+            ax.set(xscale="log", yscale="log", xlabel="Размер массива n", ylabel="Медианное время, с", title=f"ЛР 4 — {dist}")
+            ax.grid(True, which="both", alpha=.25); ax.legend(fontsize=7); fig.tight_layout()
+            fig.savefig(out_dir / f"lab04_{dist}.png", dpi=160); plt.close(fig)
+    except ImportError:
+        print("matplotlib не установлен; CSV с замерами сохранён, графики не построены.")
 
 
 def main() -> None:

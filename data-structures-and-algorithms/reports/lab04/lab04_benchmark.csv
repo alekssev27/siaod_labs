@@ -1,0 +1,146 @@
+distribution,n,algorithm,median_seconds
+random_wide,1000,merge_sort,0.0009929579682648182
+random_wide,1000,radix_sort_lsd,0.0008807501289993525
+random_wide,1000,heap_sort,0.0008307499811053276
+random_wide,1000,quick_sort (ЛР 3),0.0005724579095840454
+random_wide,1000,sorted() (эталон),4.091602750122547e-05
+random_small,1000,merge_sort,0.0009560829494148493
+random_small,1000,counting_sort,6.383401341736317e-05
+random_small,1000,radix_sort_lsd,0.00030283303931355476
+random_small,1000,heap_sort,0.0007643331773579121
+random_small,1000,quick_sort (ЛР 3),0.000500124879181385
+random_small,1000,sorted() (эталон),4.358310252428055e-05
+sorted,1000,merge_sort,0.0007411250844597816
+sorted,1000,counting_sort,9.833299554884434e-05
+sorted,1000,radix_sort_lsd,0.00032562483102083206
+sorted,1000,heap_sort,0.0008522919379174709
+sorted,1000,quick_sort (ЛР 3),0.00042829103767871857
+sorted,1000,sorted() (эталон),3.375113010406494e-06
+reversed,1000,merge_sort,0.0007373751141130924
+reversed,1000,counting_sort,9.40409954637289e-05
+reversed,1000,radix_sort_lsd,0.0004234591033309698
+reversed,1000,heap_sort,0.0007129157893359661
+reversed,1000,quick_sort (ЛР 3),0.00041304086335003376
+reversed,1000,sorted() (эталон),4.00003045797348e-06
+almost_sorted,1000,merge_sort,0.0008235001005232334
+almost_sorted,1000,counting_sort,9.49581153690815e-05
+almost_sorted,1000,radix_sort_lsd,0.00032970798201859
+almost_sorted,1000,heap_sort,0.0007925000973045826
+almost_sorted,1000,quick_sort (ЛР 3),0.0004058750346302986
+almost_sorted,1000,sorted() (эталон),1.0125106200575829e-05
+random_wide,3000,merge_sort,0.0034813338425010443
+random_wide,3000,radix_sort_lsd,0.0026392079889774323
+random_wide,3000,heap_sort,0.002840750152245164
+random_wide,3000,quick_sort (ЛР 3),0.0019425831269472837
+random_wide,3000,sorted() (эталон),0.00023345882073044777
+random_small,3000,merge_sort,0.0033279580529779196
+random_small,3000,counting_sort,0.00018174992874264717
+random_small,3000,radix_sort_lsd,0.0009041251614689827
+random_small,3000,heap_sort,0.0028030001558363438
+random_small,3000,quick_sort (ЛР 3),0.0016339579597115517
+random_small,3000,sorted() (эталон),0.00016154209151864052
+sorted,3000,merge_sort,0.002275582868605852
+sorted,3000,counting_sort,0.0002812498714774847
+sorted,3000,radix_sort_lsd,0.0012072501704096794
+sorted,3000,heap_sort,0.002915959106758237
+sorted,3000,quick_sort (ЛР 3),0.0012754159979522228
+sorted,3000,sorted() (эталон),9.416835382580757e-06
+reversed,3000,merge_sort,0.0024319160729646683
+reversed,3000,counting_sort,0.00028787506744265556
+reversed,3000,radix_sort_lsd,0.001273915870115161
+reversed,3000,heap_sort,0.0026122077833861113
+reversed,3000,quick_sort (ЛР 3),0.0013387498911470175
+reversed,3000,sorted() (эталон),1.133396290242672e-05
+almost_sorted,3000,merge_sort,0.0027691659051924944
+almost_sorted,3000,counting_sort,0.0002876250073313713
+almost_sorted,3000,radix_sort_lsd,0.0012334170751273632
+almost_sorted,3000,heap_sort,0.0029757919255644083
+almost_sorted,3000,quick_sort (ЛР 3),0.0013199159875512123
+almost_sorted,3000,sorted() (эталон),2.9165996238589287e-05
+random_wide,10000,merge_sort,0.013135666958987713
+random_wide,10000,radix_sort_lsd,0.009124583099037409
+random_wide,10000,heap_sort,0.01130720810033381
+random_wide,10000,quick_sort (ЛР 3),0.007371834013611078
+random_wide,10000,sorted() (эталон),0.0007486250251531601
+random_small,10000,merge_sort,0.012434791075065732
+random_small,10000,counting_sort,0.0006638329941779375
+random_small,10000,radix_sort_lsd,0.003074500011280179
+random_small,10000,heap_sort,0.010981291998177767
+random_small,10000,quick_sort (ЛР 3),0.005656749941408634
+random_small,10000,sorted() (эталон),0.0005857080686837435
+sorted,10000,merge_sort,0.008454082999378443
+sorted,10000,counting_sort,0.0009972909465432167
+sorted,10000,radix_sort_lsd,0.004110249923542142
+sorted,10000,heap_sort,0.011537957936525345
+sorted,10000,quick_sort (ЛР 3),0.004723333986476064
+sorted,10000,sorted() (эталон),4.045804962515831e-05
+reversed,10000,merge_sort,0.008768165949732065
+reversed,10000,counting_sort,0.001095582963898778
+reversed,10000,radix_sort_lsd,0.004972374998033047
+reversed,10000,heap_sort,0.010418500052765012
+reversed,10000,quick_sort (ЛР 3),0.004914624849334359
+reversed,10000,sorted() (эталон),4.833308048546314e-05
+almost_sorted,10000,merge_sort,0.010585583047941327
+almost_sorted,10000,counting_sort,0.0009623339865356684
+almost_sorted,10000,radix_sort_lsd,0.004205667180940509
+almost_sorted,10000,heap_sort,0.011606250191107392
+almost_sorted,10000,quick_sort (ЛР 3),0.004683000035583973
+almost_sorted,10000,sorted() (эталон),0.00011287513189017773
+random_wide,30000,merge_sort,0.04329233290627599
+random_wide,30000,radix_sort_lsd,0.028074375120922923
+random_wide,30000,heap_sort,0.038636624813079834
+random_wide,30000,quick_sort (ЛР 3),0.023441874887794256
+random_wide,30000,sorted() (эталон),0.0027032089419662952
+random_small,30000,merge_sort,0.04030283307656646
+random_small,30000,counting_sort,0.0018748748116195202
+random_small,30000,radix_sort_lsd,0.008954458869993687
+random_small,30000,heap_sort,0.03725604200735688
+random_small,30000,quick_sort (ЛР 3),0.018781499937176704
+random_small,30000,sorted() (эталон),0.0019103330560028553
+sorted,30000,merge_sort,0.02701033395715058
+sorted,30000,counting_sort,0.0028955000452697277
+sorted,30000,radix_sort_lsd,0.015390707878395915
+sorted,30000,heap_sort,0.038562375120818615
+sorted,30000,quick_sort (ЛР 3),0.015556915896013379
+sorted,30000,sorted() (эталон),0.00012904196046292782
+reversed,30000,merge_sort,0.027674542041495442
+reversed,30000,counting_sort,0.0029498750809580088
+reversed,30000,radix_sort_lsd,0.015288833994418383
+reversed,30000,heap_sort,0.03535929205827415
+reversed,30000,quick_sort (ЛР 3),0.015495582949370146
+reversed,30000,sorted() (эталон),0.00014037522487342358
+almost_sorted,30000,merge_sort,0.03556533297523856
+almost_sorted,30000,counting_sort,0.0029484168626368046
+almost_sorted,30000,radix_sort_lsd,0.015343165956437588
+almost_sorted,30000,heap_sort,0.03844370902515948
+almost_sorted,30000,quick_sort (ЛР 3),0.015553083037957549
+almost_sorted,30000,sorted() (эталон),0.00045804213732481003
+random_wide,100000,merge_sort,0.15920762508176267
+random_wide,100000,radix_sort_lsd,0.09350612503476441
+random_wide,100000,heap_sort,0.14876483380794525
+random_wide,100000,quick_sort (ЛР 3),0.0830527909565717
+random_wide,100000,sorted() (эталон),0.010039832908660173
+random_small,100000,merge_sort,0.14665749995037913
+random_small,100000,counting_sort,0.0064740420784801245
+random_small,100000,radix_sort_lsd,0.03032820811495185
+random_small,100000,heap_sort,0.13883166713640094
+random_small,100000,quick_sort (ЛР 3),0.06592608313076198
+random_small,100000,sorted() (эталон),0.006429916014894843
+sorted,100000,merge_sort,0.09620279096998274
+sorted,100000,counting_sort,0.009999208152294159
+sorted,100000,radix_sort_lsd,0.05114641599357128
+sorted,100000,heap_sort,0.14327716687694192
+sorted,100000,quick_sort (ЛР 3),0.05367058399133384
+sorted,100000,sorted() (эталон),0.00044991704635322094
+reversed,100000,merge_sort,0.10011233319528401
+reversed,100000,counting_sort,0.009928417159244418
+reversed,100000,radix_sort_lsd,0.05960745899938047
+reversed,100000,heap_sort,0.13236645911820233
+reversed,100000,quick_sort (ЛР 3),0.055588040966540575
+reversed,100000,sorted() (эталон),0.0004479170311242342
+almost_sorted,100000,merge_sort,0.13036249997094274
+almost_sorted,100000,counting_sort,0.010151917114853859
+almost_sorted,100000,radix_sort_lsd,0.05176091589964926
+almost_sorted,100000,heap_sort,0.14378433302044868
+almost_sorted,100000,quick_sort (ЛР 3),0.05453258310444653
+almost_sorted,100000,sorted() (эталон),0.0014603340532630682

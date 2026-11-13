@@ -12,12 +12,14 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import random
 import statistics
 import sys
 import time
 import traceback
 from collections import deque
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # 1. Бинарное дерево поиска (реализуется вручную, без сторонних библиотек)
@@ -38,9 +40,8 @@ class Node:
 class BST:
     """Бинарное дерево поиска без дубликатов ключей.
 
-    Инвариант: для каждого узла все ключи левого поддерева меньше key,
-    все ключи правого — больше. Ожидаемая сложность операций: TODO
-    (выразить через высоту h и обосновать в отчёте).
+    Инвариант: все ключи слева меньше key, а справа больше. Операции
+    поиска/вставки/удаления имеют O(h), где h — высота дерева.
     """
 
     def __init__(self) -> None:
@@ -48,13 +49,26 @@ class BST:
 
     def insert(self, key: int) -> None:
         """Вставка ключа; повторная вставка существующего ключа игнорируется."""
-        # TODO: спуск от корня до свободной позиции с сохранением инварианта
-        raise NotImplementedError
+        if self.root is None:
+            self.root = Node(key)
+            return
+        current = self.root
+        while True:
+            if key == current.key: return
+            side = "left" if key < current.key else "right"
+            child = getattr(current, side)
+            if child is None:
+                setattr(current, side, Node(key))
+                return
+            current = child
 
     def search(self, key: int) -> bool:
         """Возвращает True, если ключ есть в дереве."""
-        # TODO: спуск от корня со сравнением ключей
-        raise NotImplementedError
+        current = self.root
+        while current is not None:
+            if key == current.key: return True
+            current = current.left if key < current.key else current.right
+        return False
 
     def delete(self, key: int) -> None:
         """Удаление ключа. Обработать три случая:
@@ -65,30 +79,64 @@ class BST:
            поддерева) и удалить преемника из правого поддерева.
         Отсутствующий ключ игнорируется.
         """
-        # TODO: реализовать все три случая
-        raise NotImplementedError
+        parent, node = None, self.root
+        while node is not None and node.key != key:
+            parent = node
+            node = node.left if key < node.key else node.right
+        if node is None: return
+        if node.left is not None and node.right is not None:
+            successor_parent, successor = node, node.right
+            while successor.left is not None:
+                successor_parent, successor = successor, successor.left
+            node.key = successor.key
+            parent, node = successor_parent, successor
+        replacement = node.left if node.left is not None else node.right
+        if parent is None:
+            self.root = replacement
+        elif parent.left is node:
+            parent.left = replacement
+        else:
+            parent.right = replacement
 
     # -- Обходы --------------------------------------------------------------
 
     def in_order(self) -> list[int]:
         """Симметричный обход (лево — узел — право): рекурсивно."""
-        # TODO: для корректного BST результат — возрастающая последовательность
-        raise NotImplementedError
+        result = []
+        def visit(node):
+            if node is not None:
+                visit(node.left); result.append(node.key); visit(node.right)
+        visit(self.root)
+        return result
 
     def pre_order(self) -> list[int]:
         """Прямой обход (узел — лево — право): рекурсивно."""
-        # TODO
-        raise NotImplementedError
+        result = []
+        def visit(node):
+            if node is not None:
+                result.append(node.key); visit(node.left); visit(node.right)
+        visit(self.root)
+        return result
 
     def post_order(self) -> list[int]:
         """Обратный обход (лево — право — узел): рекурсивно."""
-        # TODO
-        raise NotImplementedError
+        result = []
+        def visit(node):
+            if node is not None:
+                visit(node.left); visit(node.right); result.append(node.key)
+        visit(self.root)
+        return result
 
     def level_order(self) -> list[int]:
         """Обход в ширину по уровням: итеративно через очередь (deque)."""
-        # TODO: использовать collections.deque, без рекурсии
-        raise NotImplementedError
+        if self.root is None: return []
+        result, queue = [], deque([self.root])
+        while queue:
+            node = queue.popleft()
+            result.append(node.key)
+            if node.left is not None: queue.append(node.left)
+            if node.right is not None: queue.append(node.right)
+        return result
 
     # -- Характеристики дерева ----------------------------------------------
 
@@ -97,13 +145,16 @@ class BST:
 
         Пустое дерево имеет высоту -1, дерево из одного узла — 0.
         """
-        # TODO
-        raise NotImplementedError
+        def node_height(node):
+            if node is None: return -1
+            return 1 + max(node_height(node.left), node_height(node.right))
+        return node_height(self.root)
 
     def size(self) -> int:
         """Число узлов в дереве."""
-        # TODO
-        raise NotImplementedError
+        def count(node):
+            return 0 if node is None else 1 + count(node.left) + count(node.right)
+        return count(self.root)
 
 
 # ---------------------------------------------------------------------------
@@ -279,6 +330,12 @@ def check_against_reference() -> None:
             got = tree.in_order()
             expect(got == sorted(etalon), f"прогон {run}, команда №{step} {op}: "
                                           f"in_order() = {got}, эталон {sorted(etalon)}")
+            def validate(node, low=None, high=None):
+                if node is None: return
+                expect(low is None or low < node.key, f"нарушена нижняя граница BST: {node.key} <= {low}")
+                expect(high is None or node.key < high, f"нарушена верхняя граница BST: {node.key} >= {high}")
+                validate(node.left, low, node.key); validate(node.right, node.key, high)
+            validate(tree.root)
         where = f"прогон {run}, итоговое дерево"
         for k in range(-30, 31):
             expect_search(tree, k, k in etalon, where)
@@ -354,6 +411,7 @@ def run_benchmarks(seed: int) -> None:
     """Сравнение времени QUERIES поисков в BST и в списке (оператор in)."""
     rng = random.Random(seed)
     print(f"{'n':>8} {'h(BST)':>7} {'t_bst, c':>10} {'t_list, c':>10}")
+    rows = []
     for n in SIZES:
         keys = rng.sample(range(10 * n), n)   # случайные ключи без повторов
         queries = [rng.randint(0, 10 * n) for _ in range(QUERIES)]
@@ -369,12 +427,23 @@ def run_benchmarks(seed: int) -> None:
             for q in queries:
                 q in keys  # линейный поиск для сравнения
 
-        print(f"{n:>8} {tree.height():>7} "
-              f"{bench(search_bst):>10.6f} {bench(search_list):>10.6f}")
-    # TODO: оформить результаты таблицей/графиком в отчёте;
-    # TODO: сопоставить рост t_bst с высотой дерева, а t_list — с n;
-    # TODO: в отчёте объяснить деградацию BST на упорядоченных ключах
-    #       и гарантию высоты AVL-дерева (не более 1,44*log2(n)) — мостик к ДЗ 2.
+        t_bst, t_list = bench(search_bst), bench(search_list)
+        rows.append((n, tree.height(), t_bst, t_list))
+        print(f"{n:>8} {tree.height():>7} {t_bst:>10.6f} {t_list:>10.6f}")
+    out_dir = Path(__file__).resolve().parents[2] / "reports" / "lab05"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with (out_dir / "lab05_search_benchmark.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream); writer.writerow(("n", "bst_height", "bst_seconds", "list_seconds")); writer.writerows(rows)
+    try:
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.plot([r[0] for r in rows], [r[2] for r in rows], marker="o", label="BST")
+        ax.plot([r[0] for r in rows], [r[3] for r in rows], marker="o", label="list: in")
+        ax.set(xscale="log", yscale="log", xlabel="Число ключей n", ylabel=f"Время {QUERIES} поисков, с", title="ЛР 5 — поиск в BST и списке")
+        ax.grid(True, which="both", alpha=.25); ax.legend(); fig.tight_layout()
+        fig.savefig(out_dir / "lab05_search_benchmark.png", dpi=160); plt.close(fig)
+    except ImportError:
+        print("matplotlib не установлен; CSV с замерами сохранён, график не построен.")
 
 
 def main() -> None:
